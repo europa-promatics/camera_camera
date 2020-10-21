@@ -55,12 +55,7 @@ class _CameraState extends State<Camera> {
   Size sizeImage;
  
 
-  @override
-  void dispose() {
-    bloc.dispose();
-    Wakelock.disable();
-    super.dispose();
-  }
+
   @override
   void initState() {
     super.initState();
@@ -98,6 +93,8 @@ class _CameraState extends State<Camera> {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
     bloc.dispose();
+        bloc_video.dispose();
+     Wakelock.disable();
   }
 
   void _changeCamera() async {
