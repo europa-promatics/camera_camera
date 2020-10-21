@@ -53,10 +53,27 @@ class _CameraState extends State<Camera> {
   var previewRatio;
   Size tmp;
   Size sizeImage;
+ 
 
+  @override
+  void dispose() {
+    bloc.dispose();
+    Wakelock.disable();
+    super.dispose();
+  }
   @override
   void initState() {
     super.initState();
+  Wakelock.enable();
+    bloc_video.getCameras();
+    bloc_video.cameras.listen((data) {
+      bloc_video.controllCamera = CameraController(data[0], ResolutionPreset.medium);
+      bloc_video.cameraOn.sink.add(0);
+      bloc_video.controllCamera.initialize().then((_) {
+        bloc_video.selectCamera.sink.add(true);
+      });
+    });
+
     bloc.getCameras();
     bloc.cameras.listen((data) {
       bloc.controllCamera = CameraController(
@@ -179,7 +196,7 @@ class _CameraState extends State<Camera> {
         } else {
           sizeImage = Size(height, width);
         }
-       if(!isVideo) {
+       if(isVideo) {
         return  Scaffold(
           backgroundColor: Colors.black,
           body: ConstrainedBox(
