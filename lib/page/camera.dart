@@ -128,7 +128,7 @@ class _CameraState extends State<Camera> {
                     color: Colors.white,
                   ),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   File file = await Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Video()));
                 },
