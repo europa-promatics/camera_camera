@@ -45,6 +45,8 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   var bloc = BlocCamera();
   var bloc_video = BlocVideo();
+  bool isVideo = false;
+  bool isImage = true;
   var previewH;
   var previewW;
   var screenRatio;
@@ -132,10 +134,10 @@ class _CameraState extends State<Camera> {
                   ),
                 ),
                 onPressed: () async {
-                  Navigator.of(context).pop();
-
-                  File file = await Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Video()));
+                  setState(() {
+                    isVideo = true;
+                    isImage = false;
+                  });
                 },
               ),
               backgroundColor: Colors.black38,
@@ -177,8 +179,8 @@ class _CameraState extends State<Camera> {
         } else {
           sizeImage = Size(height, width);
         }
-
-        return /* Scaffold(
+       if(!isVideo) {
+        return  Scaffold(
           backgroundColor: Colors.black,
           body: ConstrainedBox(
             constraints: BoxConstraints(
@@ -441,7 +443,7 @@ class _CameraState extends State<Camera> {
                   width: 0.0,
                   height: 0.0,
                 ),
-        ) */
+        ) }else{
 
             Scaffold(
           backgroundColor: Colors.black,
@@ -703,7 +705,7 @@ class _CameraState extends State<Camera> {
                   }),
             ),
           ),
-        );
+        );}
       },
     );
   }
