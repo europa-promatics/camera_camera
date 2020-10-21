@@ -44,6 +44,7 @@ class Camera extends StatefulWidget {
 
 class _CameraState extends State<Camera> {
   var bloc = BlocCamera();
+  var bloc_video = BlocVideo();
   var previewH;
   var previewW;
   var screenRatio;
@@ -456,31 +457,32 @@ class _CameraState extends State<Camera> {
             children: <Widget>[
               Center(
                 child: StreamBuilder<bool>(
-                    stream: bloc.selectCamera.stream,
+                    stream: bloc_video.selectCamera.stream,
                     builder: (context, snapshot) {
                       return snapshot.hasData
                           ? StreamBuilder<bool>(
-                              stream: bloc.videoOn.stream,
+                              stream: bloc_video.videoOn.stream,
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
                                   if (snapshot.data) {
                                     return AspectRatio(
-                                        aspectRatio: bloc
+                                        aspectRatio: bloc_video
                                             .controllCamera.value.aspectRatio,
-                                        child: VideoPlayer(bloc.controllVideo));
+                                        child: VideoPlayer(
+                                            bloc_video.controllVideo));
                                   } else {
                                     return AspectRatio(
-                                        aspectRatio: bloc
+                                        aspectRatio: bloc_video
                                             .controllCamera.value.aspectRatio,
-                                        child:
-                                            CameraPreview(bloc.controllCamera));
+                                        child: CameraPreview(
+                                            bloc_video.controllCamera));
                                   }
                                 } else {
                                   return AspectRatio(
-                                      aspectRatio:
-                                          bloc.controllCamera.value.aspectRatio,
-                                      child:
-                                          CameraPreview(bloc.controllCamera));
+                                      aspectRatio: bloc_video
+                                          .controllCamera.value.aspectRatio,
+                                      child: CameraPreview(
+                                          bloc_video.controllCamera));
                                 }
                               })
                           : Container();
@@ -489,19 +491,20 @@ class _CameraState extends State<Camera> {
             ],
           ),
           floatingActionButton: StreamBuilder<Object>(
-              stream: bloc.videoOn.stream,
+              stream: bloc_video.videoOn.stream,
               builder: (context, snapshot) {
                 return snapshot.hasData
                     ? snapshot.data
                         ? StreamBuilder(
-                            stream: bloc.playPause.stream,
+                            stream: bloc_video.playPause.stream,
                             builder: (context, snapshot) {
                               return snapshot.hasData
                                   ? snapshot.data
                                       ? FloatingActionButton(
                                           onPressed: () {
-                                            bloc.controllVideo.pause();
-                                            bloc.playPause.sink.add(false);
+                                            bloc_video.controllVideo.pause();
+                                            bloc_video.playPause.sink
+                                                .add(false);
                                           },
                                           child: Stack(
                                             children: <Widget>[
@@ -521,8 +524,8 @@ class _CameraState extends State<Camera> {
                                         )
                                       : FloatingActionButton(
                                           onPressed: () {
-                                            bloc.controllVideo.play();
-                                            bloc.playPause.sink.add(true);
+                                            bloc_video.controllVideo.play();
+                                            bloc_video.playPause.sink.add(true);
                                           },
                                           child: Stack(
                                             children: <Widget>[
@@ -545,7 +548,7 @@ class _CameraState extends State<Camera> {
                           )
                         : FloatingActionButton(
                             onPressed: () {
-                              bloc.stopVideoRecording();
+                              bloc_video.stopVideoRecording();
                             },
                             child: Stack(
                               children: <Widget>[
@@ -563,11 +566,12 @@ class _CameraState extends State<Camera> {
                                     height: 60.0,
                                     width: 60.0,
                                     child: StreamBuilder<bool>(
-                                        stream: bloc.videoOn.stream,
+                                        stream: bloc_video.videoOn.stream,
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return StreamBuilder<double>(
-                                                stream: bloc.timeVideo.stream,
+                                                stream:
+                                                    bloc_video.timeVideo.stream,
                                                 builder: (context, snapshot) {
                                                   return CircularProgressIndicator(
                                                     value: snapshot.data,
@@ -593,7 +597,7 @@ class _CameraState extends State<Camera> {
                           )
                     : FloatingActionButton(
                         onPressed: () {
-                          bloc.onVideoRecordButtonPressed();
+                          bloc_video.onVideoRecordButtonPressed();
                         },
                         child: Center(
                           child: CircleAvatar(
@@ -609,14 +613,14 @@ class _CameraState extends State<Camera> {
                       );
               }),
           floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-          floatingActionButtonLocation: bloc.fabLocation,
+          floatingActionButtonLocation: bloc_video.fabLocation,
           bottomNavigationBar: BottomAppBar(
             color: Colors.transparent,
             elevation: 0.0,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: StreamBuilder<Object>(
-                  stream: bloc.videoOn.stream,
+                  stream: bloc_video.videoOn.stream,
                   builder: (context, snapshot) {
                     return snapshot.hasData
                         ? snapshot.data
@@ -629,8 +633,8 @@ class _CameraState extends State<Camera> {
                                       icon: Icon(Icons.delete,
                                           color: Colors.white),
                                       onPressed: () {
-                                        bloc.deleteVideo();
-                                        bloc.videoOn.sink.add(null);
+                                        bloc_video.deleteVideo();
+                                        bloc_video.videoOn.sink.add(null);
                                       },
                                     ),
                                     backgroundColor: Colors.red,
@@ -643,8 +647,8 @@ class _CameraState extends State<Camera> {
                                         color: Colors.white,
                                       ),
                                       onPressed: () {
-                                        Navigator.pop(
-                                            context, bloc.videoPath.value);
+                                        Navigator.pop(context,
+                                            bloc_video.videoPath.value);
                                       },
                                     ),
                                     backgroundColor: Colors.grey.shade900,
@@ -673,7 +677,7 @@ class _CameraState extends State<Camera> {
                               CircleAvatar(
                                 child: IconButton(
                                   icon: StreamBuilder<int>(
-                                      stream: bloc.cameraOn,
+                                      stream: bloc_video.cameraOn,
                                       builder: (context, snapshot) {
                                         return snapshot.hasData
                                             ? snapshot.data == 0
@@ -688,7 +692,7 @@ class _CameraState extends State<Camera> {
                                             : Container();
                                       }),
                                   onPressed: () {
-                                    bloc.changeCamera();
+                                    bloc_video.changeCamera();
                                   },
                                 ),
                                 backgroundColor: Colors.grey.shade900,
