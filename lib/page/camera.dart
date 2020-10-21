@@ -460,7 +460,7 @@ class _CameraState extends State<Camera> {
                   ),
           );
         } else {
-          Scaffold(
+          return Scaffold(
             backgroundColor: Colors.black,
             appBar: PreferredSize(
                 child: Transform.translate(
