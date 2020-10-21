@@ -53,16 +53,15 @@ class _CameraState extends State<Camera> {
   var previewRatio;
   Size tmp;
   Size sizeImage;
- 
-
 
   @override
   void initState() {
     super.initState();
-  Wakelock.enable();
+    Wakelock.enable();
     bloc_video.getCameras();
     bloc_video.cameras.listen((data) {
-      bloc_video.controllCamera = CameraController(data[0], ResolutionPreset.medium);
+      bloc_video.controllCamera =
+          CameraController(data[0], ResolutionPreset.medium);
       bloc_video.cameraOn.sink.add(0);
       bloc_video.controllCamera.initialize().then((_) {
         bloc_video.selectCamera.sink.add(true);
@@ -93,8 +92,8 @@ class _CameraState extends State<Camera> {
     SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     super.dispose();
     bloc.dispose();
-        bloc_video.dispose();
-     Wakelock.disable();
+    bloc_video.dispose();
+    Wakelock.disable();
   }
 
   void _changeCamera() async {
@@ -193,81 +192,179 @@ class _CameraState extends State<Camera> {
         } else {
           sizeImage = Size(height, width);
         }
-       if(isVideo) {
-        return  Scaffold(
-          backgroundColor: Colors.black,
-          body: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width,
-              maxHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Stack(
-              children: <Widget>[
-                Center(
-                  child: StreamBuilder<File>(
-                      stream: bloc.imagePath.stream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return OrientationWidget(
-                            orientation: orientation,
-                            child: SizedBox(
-                              height: sizeImage.height,
-                              width: sizeImage.height,
-                              child: Image.file(snapshot.data,
-                                  fit: BoxFit.contain),
-                            ),
-                          );
-                        } else {
-                          return Stack(
-                            children: <Widget>[
-                              Center(
-                                child: StreamBuilder<bool>(
-                                    stream: bloc.selectCamera.stream,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        if (snapshot.data) {
-                                          previewRatio = bloc
-                                              .controllCamera.value.aspectRatio;
+        if (isVideo) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width,
+                maxHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Center(
+                    child: StreamBuilder<File>(
+                        stream: bloc.imagePath.stream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return OrientationWidget(
+                              orientation: orientation,
+                              child: SizedBox(
+                                height: sizeImage.height,
+                                width: sizeImage.height,
+                                child: Image.file(snapshot.data,
+                                    fit: BoxFit.contain),
+                              ),
+                            );
+                          } else {
+                            return Stack(
+                              children: <Widget>[
+                                Center(
+                                  child: StreamBuilder<bool>(
+                                      stream: bloc.selectCamera.stream,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          if (snapshot.data) {
+                                            previewRatio = bloc.controllCamera
+                                                .value.aspectRatio;
 
-                                          return widget.mode ==
-                                                  CameraMode.fullscreen
-                                              ? OverflowBox(
-                                                  maxHeight: size.height,
-                                                  maxWidth: size.height *
-                                                      previewRatio,
-                                                  child: CameraPreview(
-                                                      bloc.controllCamera),
-                                                )
-                                              : AspectRatio(
-                                                  aspectRatio: bloc
-                                                      .controllCamera
-                                                      .value
-                                                      .aspectRatio,
-                                                  child: CameraPreview(
-                                                      bloc.controllCamera),
-                                                );
+                                            return widget.mode ==
+                                                    CameraMode.fullscreen
+                                                ? OverflowBox(
+                                                    maxHeight: size.height,
+                                                    maxWidth: size.height *
+                                                        previewRatio,
+                                                    child: CameraPreview(
+                                                        bloc.controllCamera),
+                                                  )
+                                                : AspectRatio(
+                                                    aspectRatio: bloc
+                                                        .controllCamera
+                                                        .value
+                                                        .aspectRatio,
+                                                    child: CameraPreview(
+                                                        bloc.controllCamera),
+                                                  );
+                                          } else {
+                                            return Container();
+                                          }
                                         } else {
                                           return Container();
                                         }
-                                      } else {
-                                        return Container();
-                                      }
-                                    }),
-                              ),
-                              if (widget.imageMask != null)
-                                Center(
-                                  child: widget.imageMask,
+                                      }),
                                 ),
-                            ],
-                          );
-                        }
-                      }),
-                ),
-                if (widget.mode == CameraMode.fullscreen)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
+                                if (widget.imageMask != null)
+                                  Center(
+                                    child: widget.imageMask,
+                                  ),
+                              ],
+                            );
+                          }
+                        }),
+                  ),
+                  if (widget.mode == CameraMode.fullscreen)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: StreamBuilder<Object>(
+                            stream: bloc.imagePath.stream,
+                            builder: (context, snapshot) {
+                              return snapshot.hasData
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        CircleAvatar(
+                                          child: IconButton(
+                                            icon: OrientationWidget(
+                                              orientation: orientation,
+                                              child: Icon(Icons.close,
+                                                  color: Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              bloc.deletePhoto();
+                                            },
+                                          ),
+                                          backgroundColor: Colors.black38,
+                                          radius: 25.0,
+                                        ),
+                                        CircleAvatar(
+                                          child: IconButton(
+                                            icon: OrientationWidget(
+                                              orientation: orientation,
+                                              child: Icon(Icons.check,
+                                                  color: Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              if (widget.onFile == null)
+                                                Navigator.pop(context,
+                                                    bloc.imagePath.value);
+                                              else {
+                                                widget.onFile(
+                                                    bloc.imagePath.value);
+                                              }
+                                            },
+                                          ),
+                                          backgroundColor: Colors.black38,
+                                          radius: 25.0,
+                                        )
+                                      ],
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        CircleAvatar(
+                                          child: IconButton(
+                                            icon: OrientationWidget(
+                                              orientation: orientation,
+                                              child: Icon(Icons.arrow_back_ios,
+                                                  color: Colors.white),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          backgroundColor: Colors.black38,
+                                          radius: 25.0,
+                                        ),
+                                        _getButtonPhoto(),
+                                        _getButtonVideo(),
+                                        (widget.enableCameraChange)
+                                            ? CircleAvatar(
+                                                child: RotateIcon(
+                                                  child: OrientationWidget(
+                                                    orientation: orientation,
+                                                    child: Icon(
+                                                      Icons.cached,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  onTap: () => _changeCamera(),
+                                                ),
+                                                backgroundColor: Colors.black38,
+                                                radius: 25.0,
+                                              )
+                                            : CircleAvatar(
+                                                child: Container(),
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                radius: 25.0,
+                                              ),
+                                      ],
+                                    );
+                            }),
+                      ),
+                    )
+                ],
+              ),
+            ),
+            bottomNavigationBar: widget.mode == CameraMode.normal
+                ? BottomAppBar(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0, top: 10.0),
                       child: StreamBuilder<Object>(
                           stream: bloc.imagePath.stream,
                           builder: (context, snapshot) {
@@ -331,7 +428,6 @@ class _CameraState extends State<Camera> {
                                         radius: 25.0,
                                       ),
                                       _getButtonPhoto(),
-                                      _getButtonVideo(),
                                       (widget.enableCameraChange)
                                           ? CircleAvatar(
                                               child: RotateIcon(
@@ -358,134 +454,46 @@ class _CameraState extends State<Camera> {
                           }),
                     ),
                   )
-              ],
-            ),
-          ),
-          bottomNavigationBar: widget.mode == CameraMode.normal
-              ? BottomAppBar(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0, top: 10.0),
-                    child: StreamBuilder<Object>(
-                        stream: bloc.imagePath.stream,
-                        builder: (context, snapshot) {
-                          return snapshot.hasData
-                              ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    CircleAvatar(
-                                      child: IconButton(
-                                        icon: OrientationWidget(
-                                          orientation: orientation,
-                                          child: Icon(Icons.close,
-                                              color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          bloc.deletePhoto();
-                                        },
-                                      ),
-                                      backgroundColor: Colors.black38,
-                                      radius: 25.0,
-                                    ),
-                                    CircleAvatar(
-                                      child: IconButton(
-                                        icon: OrientationWidget(
-                                          orientation: orientation,
-                                          child: Icon(Icons.check,
-                                              color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          if (widget.onFile == null)
-                                            Navigator.pop(
-                                                context, bloc.imagePath.value);
-                                          else {
-                                            widget.onFile(bloc.imagePath.value);
-                                          }
-                                        },
-                                      ),
-                                      backgroundColor: Colors.black38,
-                                      radius: 25.0,
-                                    )
-                                  ],
-                                )
-                              : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    CircleAvatar(
-                                      child: IconButton(
-                                        icon: OrientationWidget(
-                                          orientation: orientation,
-                                          child: Icon(Icons.arrow_back_ios,
-                                              color: Colors.white),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      backgroundColor: Colors.black38,
-                                      radius: 25.0,
-                                    ),
-                                    _getButtonPhoto(),
-                                    (widget.enableCameraChange)
-                                        ? CircleAvatar(
-                                            child: RotateIcon(
-                                              child: OrientationWidget(
-                                                orientation: orientation,
-                                                child: Icon(
-                                                  Icons.cached,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              onTap: () => _changeCamera(),
-                                            ),
-                                            backgroundColor: Colors.black38,
-                                            radius: 25.0,
-                                          )
-                                        : CircleAvatar(
-                                            child: Container(),
-                                            backgroundColor: Colors.transparent,
-                                            radius: 25.0,
-                                          ),
-                                  ],
-                                );
-                        }),
+                : Container(
+                    width: 0.0,
+                    height: 0.0,
                   ),
-                )
-              : Container(
-                  width: 0.0,
-                  height: 0.0,
-                ),
-        ) }else{
-
-            Scaffold(
-          backgroundColor: Colors.black,
-          appBar: PreferredSize(
-              child: Transform.translate(
-                  offset: Offset(0.0, 0.0),
-                  child: Container(
-                    color: Colors.black,
-                  )),
-              preferredSize:
-                  Size.fromHeight(MediaQuery.of(context).size.height * 0.12)),
-          body: Stack(
-            children: <Widget>[
-              Center(
-                child: StreamBuilder<bool>(
-                    stream: bloc_video.selectCamera.stream,
-                    builder: (context, snapshot) {
-                      return snapshot.hasData
-                          ? StreamBuilder<bool>(
-                              stream: bloc_video.videoOn.stream,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  if (snapshot.data) {
-                                    return AspectRatio(
-                                        aspectRatio: bloc_video
-                                            .controllCamera.value.aspectRatio,
-                                        child: VideoPlayer(
-                                            bloc_video.controllVideo));
+          );
+        } else {
+          Scaffold(
+            backgroundColor: Colors.black,
+            appBar: PreferredSize(
+                child: Transform.translate(
+                    offset: Offset(0.0, 0.0),
+                    child: Container(
+                      color: Colors.black,
+                    )),
+                preferredSize:
+                    Size.fromHeight(MediaQuery.of(context).size.height * 0.12)),
+            body: Stack(
+              children: <Widget>[
+                Center(
+                  child: StreamBuilder<bool>(
+                      stream: bloc_video.selectCamera.stream,
+                      builder: (context, snapshot) {
+                        return snapshot.hasData
+                            ? StreamBuilder<bool>(
+                                stream: bloc_video.videoOn.stream,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    if (snapshot.data) {
+                                      return AspectRatio(
+                                          aspectRatio: bloc_video
+                                              .controllCamera.value.aspectRatio,
+                                          child: VideoPlayer(
+                                              bloc_video.controllVideo));
+                                    } else {
+                                      return AspectRatio(
+                                          aspectRatio: bloc_video
+                                              .controllCamera.value.aspectRatio,
+                                          child: CameraPreview(
+                                              bloc_video.controllCamera));
+                                    }
                                   } else {
                                     return AspectRatio(
                                         aspectRatio: bloc_video
@@ -493,233 +501,234 @@ class _CameraState extends State<Camera> {
                                         child: CameraPreview(
                                             bloc_video.controllCamera));
                                   }
-                                } else {
-                                  return AspectRatio(
-                                      aspectRatio: bloc_video
-                                          .controllCamera.value.aspectRatio,
-                                      child: CameraPreview(
-                                          bloc_video.controllCamera));
-                                }
-                              })
-                          : Container();
-                    }),
-              ),
-            ],
-          ),
-          floatingActionButton: StreamBuilder<Object>(
-              stream: bloc_video.videoOn.stream,
-              builder: (context, snapshot) {
-                return snapshot.hasData
-                    ? snapshot.data
-                        ? StreamBuilder(
-                            stream: bloc_video.playPause.stream,
-                            builder: (context, snapshot) {
-                              return snapshot.hasData
-                                  ? snapshot.data
-                                      ? FloatingActionButton(
-                                          onPressed: () {
-                                            bloc_video.controllVideo.pause();
-                                            bloc_video.playPause.sink
-                                                .add(false);
-                                          },
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Center(
-                                                child: CircleAvatar(
-                                                  radius: 35.0,
-                                                  backgroundColor: Colors.white,
-                                                  child: Icon(
-                                                    Icons.pause,
-                                                    color: Colors.black,
+                                })
+                            : Container();
+                      }),
+                ),
+              ],
+            ),
+            floatingActionButton: StreamBuilder<Object>(
+                stream: bloc_video.videoOn.stream,
+                builder: (context, snapshot) {
+                  return snapshot.hasData
+                      ? snapshot.data
+                          ? StreamBuilder(
+                              stream: bloc_video.playPause.stream,
+                              builder: (context, snapshot) {
+                                return snapshot.hasData
+                                    ? snapshot.data
+                                        ? FloatingActionButton(
+                                            onPressed: () {
+                                              bloc_video.controllVideo.pause();
+                                              bloc_video.playPause.sink
+                                                  .add(false);
+                                            },
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Center(
+                                                  child: CircleAvatar(
+                                                    radius: 35.0,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    child: Icon(
+                                                      Icons.pause,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          backgroundColor: Colors.grey.shade800,
-                                        )
-                                      : FloatingActionButton(
-                                          onPressed: () {
-                                            bloc_video.controllVideo.play();
-                                            bloc_video.playPause.sink.add(true);
-                                          },
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Center(
-                                                child: CircleAvatar(
-                                                  radius: 35.0,
-                                                  backgroundColor: Colors.white,
-                                                  child: Icon(
-                                                    Icons.play_arrow,
-                                                    color: Colors.black,
+                                              ],
+                                            ),
+                                            backgroundColor:
+                                                Colors.grey.shade800,
+                                          )
+                                        : FloatingActionButton(
+                                            onPressed: () {
+                                              bloc_video.controllVideo.play();
+                                              bloc_video.playPause.sink
+                                                  .add(true);
+                                            },
+                                            child: Stack(
+                                              children: <Widget>[
+                                                Center(
+                                                  child: CircleAvatar(
+                                                    radius: 35.0,
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                    child: Icon(
+                                                      Icons.play_arrow,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                          backgroundColor: Colors.grey.shade800,
-                                        )
-                                  : Container();
-                            },
-                          )
-                        : FloatingActionButton(
-                            onPressed: () {
-                              bloc_video.stopVideoRecording();
-                            },
-                            child: Stack(
-                              children: <Widget>[
-                                Center(
-                                  child: CircleAvatar(
-                                    radius: 35.0,
-                                    backgroundColor: Colors.white,
-                                    child: Icon(
-                                      Icons.stop,
-                                      color: Colors.red,
+                                              ],
+                                            ),
+                                            backgroundColor:
+                                                Colors.grey.shade800,
+                                          )
+                                    : Container();
+                              },
+                            )
+                          : FloatingActionButton(
+                              onPressed: () {
+                                bloc_video.stopVideoRecording();
+                              },
+                              child: Stack(
+                                children: <Widget>[
+                                  Center(
+                                    child: CircleAvatar(
+                                      radius: 35.0,
+                                      backgroundColor: Colors.white,
+                                      child: Icon(
+                                        Icons.stop,
+                                        color: Colors.red,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                    height: 60.0,
-                                    width: 60.0,
-                                    child: StreamBuilder<bool>(
-                                        stream: bloc_video.videoOn.stream,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return StreamBuilder<double>(
-                                                stream:
-                                                    bloc_video.timeVideo.stream,
-                                                builder: (context, snapshot) {
-                                                  return CircularProgressIndicator(
-                                                    value: snapshot.data,
-                                                    strokeWidth: 6.0,
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(Colors.red),
-                                                  );
-                                                });
-                                          } else {
-                                            return CircularProgressIndicator(
-                                              value: 1.0,
-                                              strokeWidth: 6.0,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colors.grey.shade800),
-                                            );
-                                          }
-                                        }))
-                              ],
-                            ),
-                            backgroundColor: Colors.grey.shade800,
-                          )
-                    : FloatingActionButton(
-                        onPressed: () {
-                          bloc_video.onVideoRecordButtonPressed();
-                        },
-                        child: Center(
-                          child: CircleAvatar(
-                            radius: 35.0,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.fiber_manual_record,
-                              color: Colors.red,
+                                  SizedBox(
+                                      height: 60.0,
+                                      width: 60.0,
+                                      child: StreamBuilder<bool>(
+                                          stream: bloc_video.videoOn.stream,
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return StreamBuilder<double>(
+                                                  stream: bloc_video
+                                                      .timeVideo.stream,
+                                                  builder: (context, snapshot) {
+                                                    return CircularProgressIndicator(
+                                                      value: snapshot.data,
+                                                      strokeWidth: 6.0,
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                                  Color>(
+                                                              Colors.red),
+                                                    );
+                                                  });
+                                            } else {
+                                              return CircularProgressIndicator(
+                                                value: 1.0,
+                                                strokeWidth: 6.0,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                            Color>(
+                                                        Colors.grey.shade800),
+                                              );
+                                            }
+                                          }))
+                                ],
+                              ),
+                              backgroundColor: Colors.grey.shade800,
+                            )
+                      : FloatingActionButton(
+                          onPressed: () {
+                            bloc_video.onVideoRecordButtonPressed();
+                          },
+                          child: Center(
+                            child: CircleAvatar(
+                              radius: 35.0,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.fiber_manual_record,
+                                color: Colors.red,
+                              ),
                             ),
                           ),
-                        ),
-                        backgroundColor: Colors.grey.shade800,
-                      );
-              }),
-          floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-          floatingActionButtonLocation: bloc_video.fabLocation,
-          bottomNavigationBar: BottomAppBar(
-            color: Colors.transparent,
-            elevation: 0.0,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: StreamBuilder<Object>(
-                  stream: bloc_video.videoOn.stream,
-                  builder: (context, snapshot) {
-                    return snapshot.hasData
-                        ? snapshot.data
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    child: IconButton(
-                                      icon: Icon(Icons.delete,
-                                          color: Colors.white),
-                                      onPressed: () {
-                                        bloc_video.deleteVideo();
-                                        bloc_video.videoOn.sink.add(null);
-                                      },
-                                    ),
-                                    backgroundColor: Colors.red,
-                                    radius: 25.0,
-                                  ),
-                                  CircleAvatar(
-                                    child: IconButton(
-                                      icon: Icon(
-                                        Icons.save,
-                                        color: Colors.white,
+                          backgroundColor: Colors.grey.shade800,
+                        );
+                }),
+            floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+            floatingActionButtonLocation: bloc_video.fabLocation,
+            bottomNavigationBar: BottomAppBar(
+              color: Colors.transparent,
+              elevation: 0.0,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: StreamBuilder<Object>(
+                    stream: bloc_video.videoOn.stream,
+                    builder: (context, snapshot) {
+                      return snapshot.hasData
+                          ? snapshot.data
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: <Widget>[
+                                    CircleAvatar(
+                                      child: IconButton(
+                                        icon: Icon(Icons.delete,
+                                            color: Colors.white),
+                                        onPressed: () {
+                                          bloc_video.deleteVideo();
+                                          bloc_video.videoOn.sink.add(null);
+                                        },
                                       ),
-                                      onPressed: () {
-                                        Navigator.pop(context,
-                                            bloc_video.videoPath.value);
-                                      },
+                                      backgroundColor: Colors.red,
+                                      radius: 25.0,
                                     ),
-                                    backgroundColor: Colors.grey.shade900,
-                                    radius: 25.0,
-                                  )
-                                ],
-                              )
-                            : Container(
-                                width: 0.0,
-                                height: 0.0,
-                              )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              CircleAvatar(
-                                child: IconButton(
-                                  icon: Icon(Icons.arrow_back,
-                                      color: Colors.white),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
+                                    CircleAvatar(
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.save,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context,
+                                              bloc_video.videoPath.value);
+                                        },
+                                      ),
+                                      backgroundColor: Colors.grey.shade900,
+                                      radius: 25.0,
+                                    )
+                                  ],
+                                )
+                              : Container(
+                                  width: 0.0,
+                                  height: 0.0,
+                                )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                CircleAvatar(
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_back,
+                                        color: Colors.white),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  backgroundColor: Colors.grey.shade900,
+                                  radius: 25.0,
                                 ),
-                                backgroundColor: Colors.grey.shade900,
-                                radius: 25.0,
-                              ),
-                              CircleAvatar(
-                                child: IconButton(
-                                  icon: StreamBuilder<int>(
-                                      stream: bloc_video.cameraOn,
-                                      builder: (context, snapshot) {
-                                        return snapshot.hasData
-                                            ? snapshot.data == 0
-                                                ? Icon(
-                                                    Icons.camera_front,
-                                                    color: Colors.white,
-                                                  )
-                                                : Icon(
-                                                    Icons.camera_rear,
-                                                    color: Colors.white,
-                                                  )
-                                            : Container();
-                                      }),
-                                  onPressed: () {
-                                    bloc_video.changeCamera();
-                                  },
-                                ),
-                                backgroundColor: Colors.grey.shade900,
-                                radius: 25.0,
-                              )
-                            ],
-                          );
-                  }),
+                                CircleAvatar(
+                                  child: IconButton(
+                                    icon: StreamBuilder<int>(
+                                        stream: bloc_video.cameraOn,
+                                        builder: (context, snapshot) {
+                                          return snapshot.hasData
+                                              ? snapshot.data == 0
+                                                  ? Icon(
+                                                      Icons.camera_front,
+                                                      color: Colors.white,
+                                                    )
+                                                  : Icon(
+                                                      Icons.camera_rear,
+                                                      color: Colors.white,
+                                                    )
+                                              : Container();
+                                        }),
+                                    onPressed: () {
+                                      bloc_video.changeCamera();
+                                    },
+                                  ),
+                                  backgroundColor: Colors.grey.shade900,
+                                  radius: 25.0,
+                                )
+                              ],
+                            );
+                    }),
+              ),
             ),
-          ),
-        );}
+          );
+        }
       },
     );
   }
