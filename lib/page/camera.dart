@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'video.dart';
 
 import 'package:native_device_orientation/native_device_orientation.dart';
 
@@ -118,6 +119,23 @@ class _CameraState extends State<Camera> {
               backgroundColor: Colors.black38,
               radius: 25.0,
             );
+                _buttonVideo() => CircleAvatar(
+              child: IconButton(
+                icon: OrientationWidget(
+                  orientation: orientation,
+                  child: Icon(
+                    Icons.videocam,
+                    color: Colors.white,
+                  ),
+                ),
+                onPressed: () {
+                 File file = await  Navigator.push(context, MaterialPageRoute(builder: (context) => Video()));
+
+                },
+              ),
+              backgroundColor: Colors.black38,
+              radius: 25.0,
+            );
 
         Widget _getButtonPhoto() {
           if (widget.orientationEnablePhoto == CameraOrientation.all) {
@@ -142,6 +160,11 @@ class _CameraState extends State<Camera> {
                 height: 0.0,
               );
           }
+        }
+
+
+           Widget _getButtonVideo {
+                return _buttonVideo();
         }
 
         if (orientation == NativeDeviceOrientation.portraitDown ||
@@ -288,6 +311,7 @@ class _CameraState extends State<Camera> {
                                         radius: 25.0,
                                       ),
                                       _getButtonPhoto(),
+                                      _getButtonVideo(),
                                       (widget.enableCameraChange)
                                           ? CircleAvatar(
                                               child: RotateIcon(
