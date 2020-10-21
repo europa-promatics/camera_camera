@@ -129,6 +129,8 @@ class _CameraState extends State<Camera> {
                   ),
                 ),
                 onPressed: () async {
+                  Navigator.of(context).pop();
+
                   File file = await Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Video()));
                 },
