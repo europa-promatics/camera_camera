@@ -119,7 +119,7 @@ class _CameraState extends State<Camera> {
               backgroundColor: Colors.black38,
               radius: 25.0,
             );
-                _buttonVideo() => CircleAvatar(
+        _buttonVideo() => CircleAvatar(
               child: IconButton(
                 icon: OrientationWidget(
                   orientation: orientation,
@@ -129,8 +129,8 @@ class _CameraState extends State<Camera> {
                   ),
                 ),
                 onPressed: () {
-                 File file = await  Navigator.push(context, MaterialPageRoute(builder: (context) => Video()));
-
+                  File file = await Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Video()));
                 },
               ),
               backgroundColor: Colors.black38,
@@ -162,9 +162,8 @@ class _CameraState extends State<Camera> {
           }
         }
 
-
-           Widget _getButtonVideo {
-                return _buttonVideo();
+        Widget _getButtonVideo() {
+          return _buttonVideo();
         }
 
         if (orientation == NativeDeviceOrientation.portraitDown ||
